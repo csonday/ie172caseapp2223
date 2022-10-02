@@ -18,7 +18,7 @@ layout = html.Div(
                 dbc.CardHeader(html.H4("Movie Management")),
                 dbc.CardBody(
                     [
-                        dbc.Button('Add Movie', color="secondary", href='/movies/movie_profile'),
+                        dbc.Button('Add Movie', color="secondary", href='/movies/movie_profile?mode=add'),
                         html.Hr(),
                         html.Div(
                             [
@@ -83,6 +83,13 @@ def moviehome_loadmovielist(pathname, searchterm):
             values += [f"%{searchterm}%"]
 
         df = db.querydatafromdatabase(sql, values, cols)
+        
+        if df.shape[0]: # check if query returns anything
+        
+        else:
+            table = 'No records to display'
+        
+        
         table = dbc.Table.from_dataframe(df, striped=True, bordered=True,
                 hover=True, size='sm')
 
