@@ -3,9 +3,11 @@ from dash import html
 import dash_bootstrap_components as dbc
 import dash
 from dash.exceptions import PreventUpdate
+from dash.dependencies import Input, Output, State
 import pandas as pd
 
 from app import app
+from apps import dbconnect as db
 
 layout = html.Div(
     [
@@ -45,3 +47,45 @@ layout = html.Div(
         )
     ]
 )
+
+
+@app.callback(
+    [
+        Output('movie_movielist', 'children')
+    ],
+    [
+        Input('url', 'pathname'),
+        Input('movie_name_filter', 'value'), # changing the text box value should update the table
+    ]
+)
+def moviehome_loadmovielist(pathname, searchterm):
+    if pathname == '/movies':
+        # 1. Obtain records from the DB via SQL
+        # 2. Create the html element to return to the Div
+        sql = """ SELECT movie_name, genre_name
+            FROM movies m
+                INNER JOIN genres g ON m.genre_id = g.genre_id
+            WHERE 
+                NOT movie_delete_ind
+        """
+        values = [] # blank since I do not have placeholders in my SQL
+        cols = ['Movie Title', 'Genre']
+        
+        
+        ### ADD THIS IF BLOCK
+        if searchterm:
+            # We use the operator ILIKE for pattern-matching
+            sql += " AND movie_name ILIKE %s"
+            
+            # The % before and after the term means that
+            # there can be text before and after
+            # the search term
+            values += [f"%{searchterm}%"]
+
+        df = db.querydatafromdatabase(sql, values, cols)
+        table = dbc.Table.from_dataframe(df, striped=True, bordered=True,
+                hover=True, size='sm')
+
+        return [table]
+    else:
+        raise PreventUpdate
