@@ -1,0 +1,3 @@
+casevenv
+*.pyc
+__pycache__
