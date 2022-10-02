@@ -61,6 +61,31 @@ layout = html.Div(
             ],
             className="mb-3",
         ),
+        # enclosing the checklist in a Div so we can
+        # hide it in Add Mode
+        html.Div(
+            dbc.Row(
+                [
+                    dbc.Label("Wish to delete?", width=2),
+                    dbc.Col(
+                        dbc.Checklist(
+                            id='movieprof_removerecord',
+                            options=[
+                                {
+                                    'label': "Mark for Deletion",
+                                    'value': 1
+                                }
+                            ],
+                            # I want the label to be bold
+                            style={'fontWeight':'bold'}, 
+                        ),
+                        width=6,
+                    ),
+                ],
+                className="mb-3",
+            ),
+            id='movieprof_removerecord_div'
+        ),
         html.Hr(),
         dbc.Button('Submit', color="secondary", id='moviesprof_submitbtn'),
         dbc.Modal(
@@ -83,12 +108,14 @@ layout = html.Div(
     [
         Output('movieprof_genre', 'options'),
         Output('movieprof_toload', 'data'),
+        # we want to update the style of this element
+        Output('movieprof_removerecord_div', 'style'),
     ],
     [
         Input('url', 'pathname')
     ],
     [
-        State('url', 'search') # add this search component to the State
+        State('url', 'search') 
     ]
 )
 def movieprof_loaddropdown(pathname, search):
@@ -108,11 +135,16 @@ def movieprof_loaddropdown(pathname, search):
         parsed = urlparse(search)
         create_mode = parse_qs(parsed.query)['mode'][0]
         to_load = 1 if create_mode == 'edit' else 0
+        
+        # to show the remove option?
+
+        removediv_style = {'display': 'none'} if not to_load else None
+        # if to_load = 0, then not to_load -> not 0 -> not False -> True
     
     else:
         raise PreventUpdate
 
-    return [genre_opts, to_load]
+    return [genre_opts, to_load, removediv_style]
 
 
 @app.callback(
@@ -129,13 +161,14 @@ def movieprof_loaddropdown(pathname, search):
         State('movieprof_title', 'value'),
         State('movieprof_releasedate', 'date'),
         State('movieprof_genre', 'value'),
-        State('url', 'search'), # we need this to identify which mode we are in
+        State('url', 'search'), 
+        State('movieprof_removerecord', 'value') # add this
     ]
 )
 def movieprof_submitprocess(submitbtn, closebtn,
                             
                             title, releasedate, genre,
-                            search):
+                            search, removerecord):
     ctx = dash.callback_context
     if ctx.triggered:
         # eventid = name of the element that caused the trigger
@@ -185,8 +218,28 @@ def movieprof_submitprocess(submitbtn, closebtn,
                 okay_href = '/movies'
             
             elif create_mode == 'edit':
-                # we define this later
-                pass
+                parsed = urlparse(search)
+                movieid = parse_qs(parsed.query)['id'][0]
+
+                # update movie_delete_ind as well
+                sqlcode = """UPDATE movies
+                SET
+                    movie_name = %s,
+                    genre_id = %s,
+                    movie_release_date  = %s,
+                    movie_delete_ind = %s
+                WHERE
+                    movie_id = %s
+                """
+                
+                to_delete = bool(removerecord)
+                values = [title, genre, releasedate, to_delete,
+                          movieid]
+
+                db.modifydatabase(sqlcode, values)
+
+                feedbackmessage = "Movie has been updated."
+                okay_href = '/movies'
             
             else:
                 # if mode value is unidentifiable
@@ -204,20 +257,14 @@ def movieprof_submitprocess(submitbtn, closebtn,
 
 @app.callback(
     [
-        # Our goal is to update values of these fields
         Output('movieprof_title', 'value'),
         Output('movieprof_genre', 'value'),
         Output('movieprof_releasedate', 'date'),
     ],
     [
-        # Our trigger is if the dcc.Store object changes its value
-        # This is how you check a change in value for a dcc.Store
         Input('movieprof_toload', 'modified_timestamp')
     ],
     [
-        # We need the following to proceed
-	    # Note that the value of the dcc.Store object is in
-	    # the ‘data’ property, and not in the ‘modified_timestamp’ property
         State('movieprof_toload', 'data'),
         State('url', 'search'),
     ]
@@ -225,7 +272,6 @@ def movieprof_submitprocess(submitbtn, closebtn,
 def movieprof_loadprofile(timestamp, toload, search):
     if toload: # check if toload = 1
         
-        # Get movieid value from the search parameters
         parsed = urlparse(search)
         movieid = parse_qs(parsed.query)['id'][0]
 
@@ -241,8 +287,6 @@ def movieprof_loadprofile(timestamp, toload, search):
         df = db.querydatafromdatabase(sql, values, col)
 
         moviename = df['moviename'][0]
-        # Our dropdown list has the genreids as values then it will 
-        # display the correspoinding labels
         genreid = int(df['genreid'][0])
         releasedate = df['releasedate'][0]
 
