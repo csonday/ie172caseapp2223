@@ -5,6 +5,7 @@ import dash
 from dash.exceptions import PreventUpdate
 from dash.dependencies import Input, Output, State
 import pandas as pd
+from urllib.parse import urlparse, parse_qs
 
 from app import app
 from apps import dbconnect as db
@@ -113,11 +114,13 @@ def movieprof_loaddropdown(pathname):
         State('movieprof_title', 'value'),
         State('movieprof_releasedate', 'date'),
         State('movieprof_genre', 'value'),
+        State('url', 'search'), # we need this to identify which mode we are in
     ]
 )
 def movieprof_submitprocess(submitbtn, closebtn,
                             
-                            title, releasedate, genre):
+                            title, releasedate, genre,
+                            search):
     ctx = dash.callback_context
     if ctx.triggered:
         # eventid = name of the element that caused the trigger
@@ -146,20 +149,33 @@ def movieprof_submitprocess(submitbtn, closebtn,
         
         # else, save to db and have feedback
         else:
-            # save to db
-            sqlcode = """INSERT INTO movies(
-                movie_name,
-                genre_id,
-                movie_release_date,
-                movie_delete_ind
-            )
-            VALUES (%s, %s, %s, %s)
-            """
-            values = [title, genre, releasedate, False]
-            db.modifydatabase(sqlcode, values)
+            # parse or decode the 'mode' portion of the search queries 
+            parsed = urlparse(search)
+            create_mode = parse_qs(parsed.query)['mode'][0]
             
-            feedbackmessage = "Movie has been saved."
-            okay_href = '/movies'
+            if create_mode == 'add':
+                # save to db
+                sqlcode = """INSERT INTO movies(
+                    movie_name,
+                    genre_id,
+                    movie_release_date,
+                    movie_delete_ind
+                )
+                VALUES (%s, %s, %s, %s)
+                """
+                values = [title, genre, releasedate, False]
+                db.modifydatabase(sqlcode, values)
+                
+                feedbackmessage = "Movie has been saved."
+                okay_href = '/movies'
+            
+            elif create_mode == 'edit':
+                # we define this later
+                pass
+            
+            else:
+                # if mode value is unidentifiable
+                raise PreventUpdate
     
     elif eventid == 'movieprof_closebtn' and closebtn:
         pass
