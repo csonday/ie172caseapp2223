@@ -83,9 +83,13 @@ def moviehome_loadmovielist(pathname, searchterm):
             values += [f"%{searchterm}%"]
 
         df = db.querydatafromdatabase(sql, values, cols)
-        table = dbc.Table.from_dataframe(df, striped=True, bordered=True,
-                hover=True, size='sm')
-
-        return [table]
+        
+        if df.shape: # check if query returned anything
+            table = dbc.Table.from_dataframe(df, striped=True, bordered=True,
+                    hover=True, size='sm')
+            return [table]
+        else:
+            return ["No records to display"]
+        
     else:
         raise PreventUpdate
