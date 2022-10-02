@@ -60,19 +60,20 @@ layout = html.Div(
 )
 def moviehome_loadmovielist(pathname, searchterm):
     if pathname == '/movies':
-        # 1. Obtain records from the DB via SQL
-        # 2. Create the html element to return to the Div
-        sql = """ SELECT movie_name, genre_name
+        
+        # 1. Add the ID to the query, we use it for the hyperlinks
+        sql = """ SELECT movie_name, genre_name, movie_id
             FROM movies m
                 INNER JOIN genres g ON m.genre_id = g.genre_id
             WHERE 
                 NOT movie_delete_ind
         """
-        values = [] # blank since I do not have placeholders in my SQL
-        cols = ['Movie Title', 'Genre']
+        values = [] 
+        # add the colname for the ID Column
+        cols = ['Movie Title', 'Genre', "ID"]
         
         
-        ### ADD THIS IF BLOCK
+
         if searchterm:
             # We use the operator ILIKE for pattern-matching
             sql += " AND movie_name ILIKE %s"
@@ -85,6 +86,25 @@ def moviehome_loadmovielist(pathname, searchterm):
         df = db.querydatafromdatabase(sql, values, cols)
         
         if df.shape: # check if query returned anything
+            # add the new column
+            
+            # 2. Create the buttons as a list based on the ID
+            
+            buttons = []
+            for movie_id in df['ID']:
+                buttons += [
+                    html.Div(
+                        dbc.Button('Edit', href=f'movies/movie_profile?mode=edit&id={movie_id}',
+                                   size='sm', color='warning'),
+                        style={'text-align': 'center'}
+                    )
+                ]
+            
+            df['Action'] = buttons
+            
+            # remove the column ID before turning into a table 
+            df.drop('ID', axis=1, inplace=True)
+            
             table = dbc.Table.from_dataframe(df, striped=True, bordered=True,
                     hover=True, size='sm')
             return [table]

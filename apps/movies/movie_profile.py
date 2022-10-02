@@ -12,6 +12,12 @@ from apps import dbconnect as db
 
 layout = html.Div(
     [
+        html.Div( # This div shall contain all dcc.Store objects
+            [
+                dcc.Store(id='movieprof_toload', storage_type='memory', data=0),
+            ]
+        ),
+
         html.H2("Movie Details"),
         html.Hr(),
         dbc.Row(
@@ -76,12 +82,16 @@ layout = html.Div(
 @app.callback(
     [
         Output('movieprof_genre', 'options'),
+        Output('movieprof_toload', 'data'),
     ],
     [
         Input('url', 'pathname')
+    ],
+    [
+        State('url', 'search') # add this search component to the State
     ]
 )
-def movieprof_loaddropdown(pathname):
+def movieprof_loaddropdown(pathname, search):
     
     if pathname == '/movies/movie_profile':
         sql = """
@@ -93,11 +103,16 @@ def movieprof_loaddropdown(pathname):
         cols = ['label', 'value']
         df = db.querydatafromdatabase(sql, values, cols)
         genre_opts = df.to_dict('records')
+        
+        # are we on add or edit mode?
+        parsed = urlparse(search)
+        create_mode = parse_qs(parsed.query)['mode'][0]
+        to_load = 1 if create_mode == 'edit' else 0
     
     else:
         raise PreventUpdate
 
-    return [genre_opts]
+    return [genre_opts, to_load]
 
 
 @app.callback(
@@ -184,3 +199,54 @@ def movieprof_submitprocess(submitbtn, closebtn,
         raise PreventUpdate
     
     return [openmodal, feedbackmessage, okay_href]
+
+
+
+@app.callback(
+    [
+        # Our goal is to update values of these fields
+        Output('movieprof_title', 'value'),
+        Output('movieprof_genre', 'value'),
+        Output('movieprof_releasedate', 'date'),
+    ],
+    [
+        # Our trigger is if the dcc.Store object changes its value
+        # This is how you check a change in value for a dcc.Store
+        Input('movieprof_toload', 'modified_timestamp')
+    ],
+    [
+        # We need the following to proceed
+	    # Note that the value of the dcc.Store object is in
+	    # the ‘data’ property, and not in the ‘modified_timestamp’ property
+        State('movieprof_toload', 'data'),
+        State('url', 'search'),
+    ]
+)
+def movieprof_loadprofile(timestamp, toload, search):
+    if toload: # check if toload = 1
+        
+        # Get movieid value from the search parameters
+        parsed = urlparse(search)
+        movieid = parse_qs(parsed.query)['id'][0]
+
+        # Query from db
+        sql = """
+            SELECT movie_name, genre_id, movie_release_date
+            FROM movies
+            WHERE movie_id = %s
+        """
+        values = [movieid]
+        col = ['moviename', 'genreid', 'releasedate']
+
+        df = db.querydatafromdatabase(sql, values, col)
+
+        moviename = df['moviename'][0]
+        # Our dropdown list has the genreids as values then it will 
+        # display the correspoinding labels
+        genreid = int(df['genreid'][0])
+        releasedate = df['releasedate'][0]
+
+        return [moviename, genreid, releasedate]
+
+    else:
+        raise PreventUpdate
