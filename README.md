@@ -93,9 +93,9 @@ At least five (5) callbacks will be required for this form:
    -    This is the largest callback that controls the following: (a) opening and closing `po_modal`, (b) determining whether you are adding or editing a line item, (c) saving the line items to the db, and (d) updating the interface that displays the line items.
 4. `clearFields`
    -    This callback populates the modal for line items, if necessary. 
-       -    If you are **adding a line item**, it resets the fields in the modal to be blank. 
-       -    If you are **editing a line item**, it pre-populates the fields with the saved details.
-5. `finishTransaction`
+        -    If you are **adding a line item**, it resets the fields in the modal to be blank. 
+        -    If you are **editing a line item**, it pre-populates the fields with the saved details.
+1. `finishTransaction`
    -    This callback does the following (a) checks if the PO has line items, and (b) cancels/deletes PO transactions.
 
 
