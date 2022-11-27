@@ -87,7 +87,7 @@ At least five (5) callbacks will be required for this form:
 1. `pageLoadOperations`
    -    This callback will be used for two purposes: (a) populating dropdowns and hiding add/edit-specific elements and (b) triggering another callback for populating PO fields
 
-2. `queryPOdata`
+2. `populatePOdata`
     -    When the user wants to edit PO details (i.e. in edit mode), this callback pre-populates the PO information already present in the db
 3. `toggleModal`
    -    This is the largest callback that controls the following: (a) opening and closing `po_modal`, (b) determining whether you are adding or editing a line item, (c) saving the line items to the db, and (d) updating the interface that displays the line items.
@@ -154,11 +154,12 @@ The scenarios above assume that you are in `add mode` for the PO profile. The fo
    1. Fill out the options for any dropdown. 
    2. Ensure that all the fields are blank.
 3. In edit mode...
-   1. Get `po_id` from url.
-   2. Query data from the table `po_transactions` using `getBasicPODetails(po_id)`
-      1. Use this data to update the general PO information using the same callback -- `pageLoadOperations`
-   3. Update a 'dcc.Store' element `poprof_loadlineitems = 1` in `pageLoadOperations`
-   4. Updating `poprof_loadlineitems` triggers the callback `toggleModal`. 
+   1. Update a 'dcc.Store' element `poprof_loaddetails = 1` in `pageLoadOperations`
+   2. Updating `poprof_loadlineitems` triggers the callback `populatePOdata`. 
+      - Get `po_id` from url.
+      -  Query data from the table `po_transactions` using `getBasicPODetails(po_id)`
+      -   Use this data to update the general PO information using the same callback -- `populatePOdata`
+   3. Updating `poprof_loadlineitems` triggers the callback `toggleModal`.
       - Activate the function `queryPOLineItems(po_id)` so that we can generate the table of line items.
       - Using `toggleModal`, update the `poprof_poid` so it contains the po_id. We can use this value to decide if we have to run `createPOrecord()` or not.
 
