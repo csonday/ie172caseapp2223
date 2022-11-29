@@ -17,8 +17,13 @@ layout = html.Div(
     [
         html.Div( # This div shall contain all dcc.Store objects
             [
+                # if edit mode, this gets a value of 1, else 0
                 dcc.Store(id='poprof_toload', storage_type='memory', data=0),
+                
+                # this gets the po_id 
                 dcc.Store(id='poprof_poid', storage_type='memory', data=0),
+                
+                # this gets the po_item_id to edit
                 dcc.Store(id='poprof_linetoedit', storage_type='memory', data=0),
             ]
         ),
