@@ -11,6 +11,7 @@ from app import app
 from apps import commonmodules as cm
 from apps import home
 from apps.movies import movies_home, movie_profile
+from apps.po import po_home, po_profile
 
 
 CONTENT_STYLE = {
@@ -62,6 +63,11 @@ def displaypage(pathname):
         
         elif pathname == '/genres':
             returnlayout = "i like horror"
+            
+        elif pathname == '/po':
+            returnlayout = po_home.layout
+        elif pathname == '/po/po_profile':
+            returnlayout = po_profile.layout
             
         else:
             raise PreventUpdate

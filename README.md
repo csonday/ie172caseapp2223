@@ -18,6 +18,7 @@
   - [Cancelling the Transaction in Add Mode](#cancelling-the-transaction-in-add-mode)
   - [Marking the PO as Deleted using Edit Mode](#marking-the-po-as-deleted-using-edit-mode)
 - [Other Implementation Considerations or Variations](#other-implementation-considerations-or-variations)
+- [Additional CSS styling for `SingleDatePicker`](#additional-css-styling-for-singledatepicker)
 
 # Setting up a One-to-Many Form
 
@@ -116,7 +117,7 @@ For this section, follow the given pseudocode to understand how the code execute
          1. Verify if inputs are correct. The `dbc.Alert()` item  with id = `poprof_linealert` is shown and its message is updated based on the input errors.
          2. Create a dictionary object `newlineitem` with the fields in the model
          3. After verifying that the modal is in add mode (`lineitemid` == 0), add `newlineitem` to the db. 
-            -    The function `addPOLineItem()` does this task
+            -    The function `managePOLineItem()` does this task
             -    Note that if we do not have any line items yet, we save the PO transaction first so that we have a `po_id` to use. We run `createPOrecord()` to perfcorm this action.
             -    The PO id is saved to the callback variable `po_id` and the `dcc.Store()` element `poprof_poid`
          4. Query the line items given the PO using `queryPOLineItems(po_id)` as a dataframe. This will be used to create the table of line items in the interface.
@@ -127,7 +128,7 @@ For this section, follow the given pseudocode to understand how the code execute
    -    `df[col] = df[col].apply(lambda num: html.Div(f"{num:,.2f}", className='text-right'))` 
 
 2. You can add an Item # column to label the line items.
-   -    `df.insert(loc=0, column='Item #', value=[i+1 for i in len(df.index)])`
+   -    `df.insert(loc=0, column='Item #', value=[i+1 for i in range(len(df.index))])`
 3. A button is added that can help us edit the line items. Note that the `id` for these buttons are dictionaries with keys `type` (the name for the family of buttons) and `index` (an indicator of the `po_item_id` to edit).
 ## Editing A Line Item
 1. Clicking the "Modify" button (`id={'index':<po_item_id>, 'type': poprof_editlinebtn}`) will trigger `toggleModal` to open `poprof_modal`.
@@ -143,7 +144,9 @@ For this section, follow the given pseudocode to understand how the code execute
 4.  Saving changes via `poprof_savelinebtn`
     1.  Verify if inputs are correct. The `dbc.Alert()` item  with id = `poprof_linealert` is shown and its message is updated based on the input errors.
     2. Create a dictionary object `newlineitem` with the fields in the model
-    3.  After verifying that the modal is in edit mode (`lineitemid` != 0), update the line item in the db using `updatePOLineItem(lineitemid)`.
+    3.  After verifying that the modal is in edit mode (`lineitemid` != 0), update the line item in the db
+        1.  If the line item is marked as delete, use `removeLineItem(lineitemid)`
+        2.  If the line item is edited, use`managePOLineItem()`
     4.  Query the line items given the PO using `queryPOLineItems(po_id)` as a dataframe. This will be used to create the table of line items in the interface.
 
 ## Loading a Purchase Order in Edit Mode
@@ -193,3 +196,53 @@ In this case, the user enters the edit mode and marks the transaction as deleted
    3. CON: Lags may happen due to use of computer memory. 
 
 3. Some user different types of interface to enter data. This is entirely up to the developers and needs of the system.
+
+# Additional CSS styling for `SingleDatePicker`
+Create a file `customcss.css` and put it inside `assets`. `customcss.css` contains the following
+```
+.DateInput, .DateInput_1 {
+  display: inline-block;
+  width: 100%;
+  height: calc(1.5em + 0.75rem + 2px);
+  line-height: 1.5;
+  color: #777;
+  background-color: #fff;
+  background-clip: padding-box;
+  border-radius: 0.25rem;
+  border: 0;
+  -webkit-transition: border-color 0.15s ease-in-out,
+    -webkit-box-shadow 0.15s ease-in-out;
+  transition: border-color 0.15s ease-in-out,
+    -webkit-box-shadow 0.15s ease-in-out;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out,
+    -webkit-box-shadow 0.15s ease-in-out;
+}
+
+.DateInput_input, .DateInput_input_1 {
+  display: block;
+  width: 100%;
+  height: 100%;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  color: #777;
+  border-radius: 0.25rem;
+  padding: 0.375rem 0.75rem;
+  border-bottom: 2px solid #008489
+}
+
+.SingleDatePicker {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.SingleDatePickerInput__withBorder{
+  border: 1px solid #bbb;
+  border-radius: 0.25rem;
+  width: 100%
+}
+```
+
+
