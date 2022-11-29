@@ -75,13 +75,26 @@ ___
 ## Modal for Line Items (`poprof_modal`)
 For this implementation, a modal serves as a **pop-up form** for each line item. It will be used to add new line items, and edit/delete each line. 
 
-PLS ADD A PHOTO
+![image](https://user-images.githubusercontent.com/55682386/204579993-553fa900-fae7-4af3-b07c-7459568801f2.png)
 
 
 ## `dcc.Store` Elements
 These storage elements will be significant to store objects into the memory so that information is available when an add/edit/delete process is performed.
 
-PLS ADD A LIST OF THE ELEMENTS
+```
+html.Div( # This div shall contain all dcc.Store objects
+    [
+        # if edit mode, this gets a value of 1, else 0
+        dcc.Store(id='poprof_toload', storage_type='memory', data=0),
+
+        # this gets the po_id 
+        dcc.Store(id='poprof_poid', storage_type='memory', data=0),
+
+        # this gets the po_item_id to edit
+        dcc.Store(id='poprof_linetoedit', storage_type='memory', data=0),
+    ]
+),
+```
 
 ## Callbacks
 At least five (5) callbacks will be required for this form:
@@ -244,5 +257,6 @@ Create a file `customcss.css` and put it inside `assets`. `customcss.css` contai
   width: 100%
 }
 ```
+![image](https://user-images.githubusercontent.com/55682386/204579600-c644c530-2626-4ac6-8e34-7af9377f8870.png)
 
 
