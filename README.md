@@ -12,6 +12,7 @@ LINK TO APP: [https://ie172caseapp2223.herokuapp.com](https://ie172caseapp2223.h
   - [requirements.txt](#requirementstxt)
   - [runtime.txt](#runtimetxt)
   - [Procfile](#procfile)
+  - [Setup index.py, create `server` variable](#setup-indexpy-create-server-variable)
 - [Setup the App](#setup-the-app)
   - [Create an App on Heroku](#create-an-app-on-heroku)
   - [Specify deployment mode](#specify-deployment-mode)
@@ -77,8 +78,11 @@ This file contains all the dependencies that Heroku will need to `pip-install`. 
 
 ## Procfile
 1. Create a file with the name specified above. Just Procfile. No file extensions.
-2. The file will contain only the line `web: gunicorn index:app --preload`
+2. The file will contain only the line `web: gunicorn index:server --preload`
 3. Save the file.
+
+## Setup index.py, create `server` variable
+1. Above your `app.layout` definition, add the line `server = app.server`
 
 # Setup the App
 
