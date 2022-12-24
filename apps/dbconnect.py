@@ -3,7 +3,7 @@ import pandas as pd
 import os
 
 def getdblocation():
-    DATABASE_URL = os.environ['DATABASE_URL']
+    DATABASE_URL = os.environ['DATABASE']
     db = psycopg2.connect(DATABASE_URL, sslmode='require')
     return db
 
