@@ -1,4 +1,4 @@
-# Table of Contents
+﻿# Table of Contents
 
 - [Table of Contents](#table-of-contents)
 - [Pre-requisites](#pre-requisites)
@@ -20,6 +20,7 @@
   - [Add new Server on pgAdmin](#add-new-server-on-pgadmin)
   - [Backup your database](#backup-your-database)
   - [Restore the db to the Remote Server](#restore-the-db-to-the-remote-server)
+- [Configure dbconnect.py](#configure-dbconnectpy)
 
 
 # Pre-requisites
@@ -115,3 +116,12 @@ Dynos are like CPUs. No dyno means nothing will run your app. This costs money. 
 1. Restore the db. Make sure to clean it first (see photo below).
 2. The prompt may indicate "Failed" but do not panic. 
 3. Test the app or run a query to see if the restoration is successful.
+
+# Configure dbconnect.py
+1. Replace the `getdblocation()` definition
+```
+import os
+def getdblocation():
+    DATABASE_URL = os.environ['DATABASE_URL']
+    db = psycopg2.connect(DATABASE_URL, sslmode='require')
+    return db```
