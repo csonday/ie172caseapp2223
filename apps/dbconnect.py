@@ -1,18 +1,10 @@
 import psycopg2
 import pandas as pd
-
+import os
 
 def getdblocation():
-    # Define your connection details
-    db = psycopg2.connect(
-        # Get your credentials from the pgadmin. More details below.
-        host='localhost',
-        database='172casedb',
-        user='postgres',
-        port=5432,
-        password='password'
-    )
-    # return the connection details
+    DATABASE_URL = os.environ['DATABASE']
+    db = psycopg2.connect(DATABASE_URL, sslmode='require')
     return db
 
 
