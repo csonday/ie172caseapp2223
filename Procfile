@@ -1,1 +1,1 @@
-web: gunicorn index:server --preload
+web: gunicorn index:app --preload
