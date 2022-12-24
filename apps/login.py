@@ -42,6 +42,8 @@ layout = html.Div(
         dbc.Button('Login', color="secondary", id='login_loginbtn'),
         html.Hr(),
         html.A('Signup Now!', href='/signup'),
+        html.Br(),
+        html.A('SOURCE CODE, CLICK HERE!', href='https://github.com/csonday/ie172caseapp2223/tree/one-to-many')
     ]
 )
 
