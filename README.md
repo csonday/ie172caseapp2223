@@ -24,7 +24,7 @@ LINK TO APP: [https://ie172caseapp2223.herokuapp.com](https://ie172caseapp2223.h
   - [Backup your database](#backup-your-database)
   - [Restore the db to the Remote Server](#restore-the-db-to-the-remote-server)
   - [Setup the DB URI to Heroku](#setup-the-db-uri-to-heroku)
-- [Configure dbconnect.py](#configure-dbconnectpy)
+  - [Configure dbconnect.py](#configure-dbconnectpy)
 - [Diagnosing your App](#diagnosing-your-app)
 
 
@@ -143,6 +143,7 @@ Dynos are like CPUs. No dyno means nothing will run your app. This costs money. 
 ![server2](https://user-images.githubusercontent.com/55682386/209425117-ed2a5621-454b-47c1-b4b0-36dd7fe81593.JPG)
 
 3. Check out the new server. This is a remote server, only accessible with internet. 
+   
 ![dbview](https://user-images.githubusercontent.com/55682386/209425138-976815b6-173c-4834-8931-19572cd4c3c9.JPG)
 
 
@@ -158,9 +159,10 @@ Dynos are like CPUs. No dyno means nothing will run your app. This costs money. 
 1. From the Heroku Postgres page where the DB creds are, you will find the URI for the db.
 2. Copy this URI.
 3. Go to the app dashboard, then settings tab (photo below). Find the Config Vars. 
+   
 ![configvars](https://user-images.githubusercontent.com/55682386/209425146-a3b28179-6ba7-4295-b33b-8e4c46a5f5be.JPG)
 
-4. Add a new Key = DATABASE_URL, VALUE = paste the URI you copied
+1. Add a new Key = DATABASE_URL, VALUE = paste the URI you copied
 
 ## Configure dbconnect.py
 1. Replace the `getdblocation()` definition
