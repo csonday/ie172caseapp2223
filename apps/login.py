@@ -10,7 +10,7 @@ from apps import dbconnect as db
 
 layout = html.Div(
     [
-        html.H2('Please Login'),
+        html.H2('Please Login (password:testing)'),
         html.Hr(),
         dbc.Alert('Username or password is incorrect.', color="danger", id='login_alert',
                   is_open=False),
@@ -19,7 +19,8 @@ layout = html.Div(
                 dbc.Label("Username", width=2),
                 dbc.Col(
                     dbc.Input(
-                        type="text", id="login_username", placeholder="Enter username"
+                        type="text", id="login_username", placeholder="Enter username",
+                        value='admin'
                     ),
                     width=6,
                 ),
@@ -31,7 +32,7 @@ layout = html.Div(
                 dbc.Label("Password", width=2),
                 dbc.Col(
                     dbc.Input(
-                        type="text", id="login_password", placeholder="Enter password"
+                        type="password", id="login_password", placeholder="Enter password"
                     ),
                     width=6,
                 ),

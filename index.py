@@ -76,7 +76,6 @@ def displaypage(pathname, sessionlogout, currentuserid):
         raise PreventUpdate
     
     if eventid == 'url':
-        print(currentuserid, pathname)
         if currentuserid < 0:
             if pathname in ['/']:
                 returnlayout = login.layout
@@ -101,16 +100,14 @@ def displaypage(pathname, sessionlogout, currentuserid):
             
             elif pathname == '/genres':
                 returnlayout = "i like horror"
-                
-            else:
-                returnlayout = '404: request not found'
             elif pathname == '/po':
                 returnlayout = po_home.layout
             elif pathname == '/po/po_profile':
                 returnlayout = po_profile.layout
                 
+                
             else:
-                raise PreventUpdate
+                returnlayout = '404: request not found'
     else:
         raise PreventUpdate
     
