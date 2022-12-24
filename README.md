@@ -20,7 +20,9 @@
   - [Add new Server on pgAdmin](#add-new-server-on-pgadmin)
   - [Backup your database](#backup-your-database)
   - [Restore the db to the Remote Server](#restore-the-db-to-the-remote-server)
+  - [Setup the DB URI to Heroku](#setup-the-db-uri-to-heroku)
 - [Configure dbconnect.py](#configure-dbconnectpy)
+- [Diagnosing your App](#diagnosing-your-app)
 
 
 # Pre-requisites
@@ -115,8 +117,13 @@ Dynos are like CPUs. No dyno means nothing will run your app. This costs money. 
 ## Restore the db to the Remote Server
 1. Restore the db. Make sure to clean it first (see photo below).
 2. The prompt may indicate "Failed" but do not panic. 
-3. Test the app or run a query to see if the restoration is successful.
+3. Run a query to see if the restoration is successful.
 
+## Setup the DB URI to Heroku
+1. From the Heroku Postgres page where the DB creds are, you will find the URI for the db.
+2. Copy this URI.
+3. Go to the app dashboard, then settings tab (photo below). Find the Config Vars. 
+4. Add a new Key = DATABASE_URL, VALUE = paste the URI you copied
 # Configure dbconnect.py
 1. Replace the `getdblocation()` definition
 ```
@@ -124,4 +131,11 @@ import os
 def getdblocation():
     DATABASE_URL = os.environ['DATABASE_URL']
     db = psycopg2.connect(DATABASE_URL, sslmode='require')
-    return db```
+    return db
+  ```
+2. Push the changes and update the app (if you allow automatic deployments, push = update).
+3. Test your app. 
+
+# Diagnosing your App
+To view any errors, go to More > View Logs. This will show you any error prompts.
+
