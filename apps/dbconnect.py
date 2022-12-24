@@ -37,3 +37,13 @@ def querydatafromdatabase(sql, values, dfcolumns):
     rows = pd.DataFrame(cur.fetchall(), columns=dfcolumns)
     db.close()
     return rows
+
+
+def modifydatabasereturnid(sqlcommand, values):
+    db = getdblocation()
+    cursor = db.cursor()
+    cursor.execute(sqlcommand, values)
+    key = cursor.fetchone()[0]
+    db.commit()
+    db.close()
+    return key

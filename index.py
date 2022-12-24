@@ -12,6 +12,8 @@ from apps import commonmodules as cm
 from apps import home
 from apps.movies import movies_home, movie_profile
 from apps import login, signup
+from apps.po import po_home, po_profile
+
 
 CONTENT_STYLE = {
     "margin-left": "1em",
@@ -102,6 +104,13 @@ def displaypage(pathname, sessionlogout, currentuserid):
                 
             else:
                 returnlayout = '404: request not found'
+            elif pathname == '/po':
+                returnlayout = po_home.layout
+            elif pathname == '/po/po_profile':
+                returnlayout = po_profile.layout
+                
+            else:
+                raise PreventUpdate
     else:
         raise PreventUpdate
     
