@@ -15,6 +15,11 @@
   - [Specify deployment mode](#specify-deployment-mode)
   - [Deploy](#deploy)
   - [Add Dynos](#add-dynos)
+- [Setup the DB](#setup-the-db)
+  - [Add Heroku Postgres Add-on and Get DB Credentials](#add-heroku-postgres-add-on-and-get-db-credentials)
+  - [Add new Server on pgAdmin](#add-new-server-on-pgadmin)
+  - [Backup your database](#backup-your-database)
+  - [Restore the db to the Remote Server](#restore-the-db-to-the-remote-server)
 
 
 # Pre-requisites
@@ -32,7 +37,7 @@ A **virtual machine** is basically a computer that runs your app online. Follow 
 2. Visit the [Github Student Page](https://education.github.com/benefits?type=student) and click on "Get Student Benefits"
 3. Ensure that you added your UP email to your Github account. You will need it to get the student package.
 4. Upload a proof of enrollment, your Form 5 will work. The form ONLY accepts JPG files. 
-5. Upon submission, processing may take a few days
+5. Upon submission, processing may take a few days.
 
 
 
@@ -46,7 +51,7 @@ A **virtual machine** is basically a computer that runs your app online. Follow 
 
 > Each student registered for a GitHub Student Developer Pack is eligible to receive one allocation of Heroku platform credits worth \$156 USD, which will burn down at a rate of $13 USD per month over 12 months starting from the date of eligibility confirmation.
 
-4. Approval of the credits can take a while. You can check Heroku > Account Settings > Billing to check the platform credits added to your account. 
+4. Approval of the credits can take a while. You can check Heroku > Account Settings > Billing to check the platform credits added to your account. Heroku advises it may take 24 hours.
 
 # Create Config Files
 These config files are needed so your Virtual Machine (VM) knows what to setup. You just need to add these to your main app directory (same level where index.py is).
@@ -88,3 +93,25 @@ This file contains all the dependencies that Heroku will need to `pip-install`. 
 
 ## Add Dynos
 Dynos are like CPUs. No dyno means nothing will run your app. This costs money. If you have the credits, then you can buy some dynos. 
+1. Go to your app Dashboard > Resources
+2. **Add the cheapest dyno, 7USD per month**
+
+# Setup the DB
+## Add Heroku Postgres Add-on and Get DB Credentials
+1. Under Resources (where you added the dyno), search for Heroku Postgres
+2. Choose the cheapest option (Mini, $5)
+3. Click on Heroku Postgres to open its Dashboard.
+4. Go to Settings > View Credentials
+
+## Add new Server on pgAdmin
+1. Register a server on pgadmin
+2. Use the credentials from Heroku. Setup a database restriction under the Advanced Tab (see photo below).
+3. Check out the new server. This is a remote server, only accessible with internet. 
+
+## Backup your database
+1. Backup your local for loading to the remote server.
+
+## Restore the db to the Remote Server
+1. Restore the db. Make sure to clean it first (see photo below).
+2. The prompt may indicate "Failed" but do not panic. 
+3. Test the app or run a query to see if the restoration is successful.
