@@ -13,6 +13,8 @@
 - [Setup the App](#setup-the-app)
   - [Create an App on Heroku](#create-an-app-on-heroku)
   - [Specify deployment mode](#specify-deployment-mode)
+  - [Deploy](#deploy)
+  - [Add Dynos](#add-dynos)
 
 
 # Pre-requisites
@@ -75,3 +77,12 @@ This file contains all the dependencies that Heroku will need to `pip-install`. 
 ## Specify deployment mode
 1. Select GitHub as deployment mode. Connect to Github.
 2. You want a separate branch/repository for deployment. If you mess-up with a push on development, this separate repo will protect the deployed app.
+3. Connect to the relevant repository.
+
+## Deploy
+1. Select the branch to deploy. 
+2. You can enable automatic deploys. If you push here, the deployment gets updated.
+3. You can also click on Manual Deployment. 
+
+## Add Dynos
+Dynos are like CPUs. No dyno means nothing will run your app. This costs money. If you have the credits, then you can buy some dynos. 
