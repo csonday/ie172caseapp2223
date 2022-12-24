@@ -55,8 +55,10 @@ These config files are needed so your Virtual Machine (VM) knows what to setup. 
 This file contains all the dependencies that Heroku will need to `pip-install`. Follow these steps to make this file. 
 1. Open a terminal. Make sure the directory specified is the app directory. 
 2. ENSURE that your venv is activated.
-3. Run `pip freeze > requirements.txt`
-4. A `requirements.txt` file should be available in your app directory. 
+3. Install `gunicorn` -- identifies the app and deploys it in the VM
+   1. `pip install gunicorn`
+4. Run `pip freeze > requirements.txt`
+5. A `requirements.txt` file should be available in your app directory. 
 
 ## runtime.txt
 1. Create a file in the app directory with the filename runtime.txt
