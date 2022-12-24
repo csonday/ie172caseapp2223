@@ -1,4 +1,4 @@
-﻿# Table of Contents
+# Table of Contents
 
 - [Table of Contents](#table-of-contents)
 - [Pre-requisites](#pre-requisites)
