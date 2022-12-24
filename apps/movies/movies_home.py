@@ -50,58 +50,67 @@ layout = html.Div(
 )
 
 
-
 @app.callback(
     [
-        Output('movie_movielist', 'children'),
+        Output('movie_movielist', 'children')
     ],
     [
         Input('url', 'pathname'),
-        Input('movie_name_filter', 'value'),
+        Input('movie_name_filter', 'value'), # changing the text box value should update the table
     ]
 )
-def updatemovielist(pathname, searchterm):
+def moviehome_loadmovielist(pathname, searchterm):
     if pathname == '/movies':
-        # 1. query the relevant records
-        sql = """SELECT movie_name, genre_name, movie_id
-                FROM movies m
-                    INNER JOIN genres g ON m.genre_id = g.genre_id
-                WHERE NOT movie_delete_ind"""
-        val = []
-        colnames = ['Movie Title', 'Genre', 'ID']
         
+        # 1. Add the ID to the query, we use it for the hyperlinks
+        sql = """ SELECT movie_name, genre_name, movie_id
+            FROM movies m
+                INNER JOIN genres g ON m.genre_id = g.genre_id
+            WHERE 
+                NOT movie_delete_ind
+        """
+        values = [] 
+        # add the colname for the ID Column
+        cols = ['Movie Title', 'Genre', "ID"]
+        
+        
+
         if searchterm:
-            sql += """ AND movie_name ILIKE %s"""
-            val += [f"%{searchterm}%"]
+            # We use the operator ILIKE for pattern-matching
+            sql += " AND movie_name ILIKE %s"
+            
+            # The % before and after the term means that
+            # there can be text before and after
+            # the search term
+            values += [f"%{searchterm}%"]
+
+        df = db.querydatafromdatabase(sql, values, cols)
         
-        
-        movies = db.querydatafromdatabase(sql, val, colnames)
-        
-        # 2. create the table and add it to the interface
-        
-        if movies.shape[0]:
-            # add the buttons with the respective href
+        if df.shape: # check if query returned anything
+            # add the new column
+            
+            # 2. Create the buttons as a list based on the ID
+            
             buttons = []
-            for movieid in movies['ID']:
+            for movie_id in df['ID']:
                 buttons += [
                     html.Div(
-                        dbc.Button('Edit/Delete', href=f"/movies/movie_profile?mode=edit&id={movieid}",
-                               size='sm', color='warning'),
+                        dbc.Button('Edit', href=f'movies/movie_profile?mode=edit&id={movie_id}',
+                                   size='sm', color='warning'),
                         style={'text-align': 'center'}
                     )
                 ]
             
-            # we add the buttons to the movies table
-            movies['Action'] = buttons
+            df['Action'] = buttons
             
-            # remove the ID column
-            movies.drop('ID', axis=1, inplace=True)
+            # remove the column ID before turning into a table 
+            df.drop('ID', axis=1, inplace=True)
             
-            table = dbc.Table.from_dataframe(movies, striped=True, bordered=True, hover=True, size='sm')
-            
+            table = dbc.Table.from_dataframe(df, striped=True, bordered=True,
+                    hover=True, size='sm')
             return [table]
         else:
-            return ["There are no records that match the search term."]
+            return ["No records to display"]
         
     else:
         raise PreventUpdate
